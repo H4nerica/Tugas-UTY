@@ -1,1 +1,34 @@
+CREATE TABLE kunjungan (
+    id_kunjungan int PRIMARY KEY,
+    nama_perusahaan VARCHAR(50),
+    sponsor VARCHAR(50),
+    hari VARCHAR(50)
+);
 
+CREATE table peserta_kunjungan (
+    id_peserta int PRIMARY KEY,
+    id_kunjungan int,
+    nama_mahasiswa VARCHAR(50),
+    semester VARCHAR(50),
+    prodi VARCHAR(50),
+    FOREIGN KEY (id_kunjungan) REFERENCES kunjungan(id_kunjungan)
+);
+
+INSERT INTO kunjungan (id_kunjungan, nama_perusahaan, sponsor, hari)
+VALUES 
+(5593, "Phoenix Enterprises", "teh pucuk", "Rabu"),
+(2150, "Brilliance Bay", "teh ocha", "Senen"),
+(1404, "Synergy Systems", "biskuit roma", "Selasa"),
+(4448, "Radiance Result", "lifeboy", "Rabu");
+
+
+INSERT INTO peserta_kunjungan (id_peserta, id_kunjungan,nama_mahasiswa, semester, prodi)
+VALUES 
+(965394, 5593, "Joko Tingting", "semester ganjil", "Teknik Komputer"),
+(551293, 2150, "Nathan Jayani", "semester genap", "Informatika"),
+(231861, 1404, "Muhammad joko", "semester genap", "Teknik Komputer"),
+(356236, 4448, "Sutimah", "semester ganjil", "Arsitek");
+
+SELECT * FROM `kunjungan` WHERE id_kunjungan = 1404 AND sponsor = "biskuit roma"
+
+SELECT * FROM `peserta_kunjungan` ORDER BY id_peserta DESC;
