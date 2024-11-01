@@ -88,3 +88,48 @@ void loop() {
   digitalWrite(fan, HIGH); // Turn the fan on initially
   delay(0);
 }
+
+
+
+
+
+
+
+
+===============================================
+
+const int gas = A0; // Connect AO to A0
+const int buzzer = D0;
+const int fan = D1;
+
+void setup() {
+  pinMode(buzzer, OUTPUT);
+  pinMode(fan, OUTPUT); 
+  Serial.begin(9600); // Start serial communication
+}
+
+void loop() {
+  // Read the analog value from the sensor
+  int sensor = analogRead(gas);
+  
+  // Print the value to the Serial Monitor
+  Serial.print("MQ-2 Sensor Value: ");
+  Serial.println(sensor);
+  delay(200); 
+
+  if (sensor >= 710) {
+    digitalWrite(buzzer, HIGH); // Turn on the buzzer
+  } else {
+    digitalWrite(buzzer, LOW);  // Turn off the buzzer
+  }
+}
+
+
+
+
+
+
+
+
+
+
