@@ -124,7 +124,28 @@ void loop() {
   }
 }
 
+===============================================
+const int servo = D1; // Pin connected to the servo
 
+void setup() {
+  pinMode(servo, OUTPUT);
+}
+
+void loop() {
+  // Move to 0 degrees
+  digitalWrite(servo, HIGH);
+  delay(1); // 1 ms HIGH for 0 degrees
+  digitalWrite(servo, LOW);
+  delay(19); // 19 ms LOW to complete the 20 ms cycle
+  delay(1000); // Wait for 1 second
+
+  // Move to 180 degrees
+  digitalWrite(servo, HIGH);
+  delay(2); // 2 ms HIGH for 180 degrees
+  digitalWrite(servo, LOW);
+  delay(18); // 18 ms LOW to complete the 20 ms cycle
+  delay(1000); // Wait for 1 second
+}
 
 
 
