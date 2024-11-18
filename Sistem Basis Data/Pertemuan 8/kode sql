@@ -52,5 +52,7 @@ SELECT nama_brg, harga_satuan, jml_brg, (harga_satuan * jml_brg) AS total_pembel
 SELECT nama, tgl_lhr FROM pegawai WHERE MONTH(tgl_lhr) = 12;
 //jawaban 2b
 SELECT nama, tgl_lhr FROM pegawai WHERE alamat = 'jogja' AND YEAR(tgl_lhr) < 1990;
+//jawaban 3b
+SELECT nama,tgl_lhr FROM pegawai WHERE YEAR(CURDATE()) - YEAR(tgl_lhr) > 30; 
 
 
