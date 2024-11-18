@@ -1,0 +1,49 @@
+//import p8.sql
+//pilih tabel ulangtaun
+INSERT INTO ulangtahun (nama, birthdate, birthtime)    
+VALUES ('nathan', '2005-02-21', '12:30:01')
+
+//Tambilkan tgl saat ini
+SELECT CURDATE()
+
+//Menampilkan waktu skrg detail
+SELECT curtime()
+
+//menu komplit tgl dan waktu skrg
+SELECT CURRENT_TIMESTAMP()
+
+//tampilkan hari pd tgl 2005 02 21
+SELECT dayname('2005-02-21')
+
+//tampilkan tgl 
+SELECT dayofmonth('2005-02-21')
+
+//tampilkan bulan
+SELECT month('2005-02-21')
+
+//waktu
+SELECT hour('12:30:01')
+SELECT minute('12:30:01')
+SELECT second('12:30:01')
+
+//jumlah, plg sedikit, plg banyak, rata-rata, menghitung baris tabel 
+SELECT sum(jual) from barang
+SELECT min(jual) from barang
+SELECT max(jual) from barang
+SELECT avg(jual) from barang
+SELECT count(jual) from barang
+
+//buat kolom dgn nama penjumlahan dari hasil jual+beli
+SELECT (jual+beli) as penjumlahan from barang
+SELECT jual, beli, (jual+beli) as penjumlahan from barang
+
+//penjumalhan, selisih, perkalian, pembagian, modulus
+SELECT jual, beli, (jual+beli) as penjumlahan, (jual-beli) as selisih, (jual*beli) as perkalian, (jual/beli) as pembagian, (jual%beli) as modulus from barang
+
+//jawaban 1a
+select nama_brg, harga_satuan from beli where harga_satuan = (SELECT max(harga_satuan) from beli)
+//jawaban 1b
+select nama_brg, jml_brg from beli where jml_brg = (SELECT min(jml_brg) from beli)
+//jawaban 1c
+SELECT nama_brg, harga_satuan, jml_brg, (harga_satuan * jml_brg) AS total_pembelian FROM beli WHERE (harga_satuan * jml_brg) = (SELECT MAX(harga_satuan * jml_brg) FROM beli);
+
