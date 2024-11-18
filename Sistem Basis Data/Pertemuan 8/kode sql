@@ -47,3 +47,10 @@ select nama_brg, jml_brg from beli where jml_brg = (SELECT min(jml_brg) from bel
 //jawaban 1c
 SELECT nama_brg, harga_satuan, jml_brg, (harga_satuan * jml_brg) AS total_pembelian FROM beli WHERE (harga_satuan * jml_brg) = (SELECT MAX(harga_satuan * jml_brg) FROM beli);
 
+
+//jawaban 2a
+SELECT nama, tgl_lhr FROM pegawai WHERE MONTH(tgl_lhr) = 12;
+//jawaban 2b
+SELECT nama, tgl_lhr FROM pegawai WHERE alamat = 'jogja' AND YEAR(tgl_lhr) < 1990;
+
+
