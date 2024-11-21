@@ -1,0 +1,23 @@
+void setup() {
+  Serial.begin(9600); // Start serial communication
+  pinMode(ledPin, OUTPUT); // Set LED pin as output
+}
+
+void loop() {
+  int incomingValue = Serial.parseInt(); // Read the incoming integer
+  if (incomingValue == 1) { // Check if it is the integer 1
+    digitalWrite(ledPin, HIGH); // Turn on the LED
+  }
+}
+
+
+
+
+void setup() {
+  Serial.begin(9600); // Start serial communication
+}
+
+void loop() {
+  Serial.println(1); // Send the integer 1 to Arduino 2
+  delay(1000); // Wait for 1 second
+}
