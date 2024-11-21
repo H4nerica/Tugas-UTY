@@ -35,7 +35,8 @@ void setup() {
 void loop() {
 }
 
-
+===================================================
+  
 
 
 
@@ -147,8 +148,19 @@ void loop() {
   delay(1000); // Wait for 1 second
 }
 
+=================================================
+// C++ code
+//
+void setup()
+{
+  Serial.begin(9600);
+}
 
-
+void loop()
+{
+  Serial.write('U');
+  delay(300);
+}
 
 
 
