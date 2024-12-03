@@ -1,0 +1,101 @@
+package test;
+import java.util.Scanner;
+
+public class test {
+String NamaLengkap;
+String Pendidikan;
+String Status;
+int ThnMasuk; 
+
+public test(String N, String P, String S, int T){
+    NamaLengkap = N;
+    Pendidikan  = P;
+    Status      = S;
+    ThnMasuk    = T;
+}
+
+public static void main(String[] args) {
+    test K1 = new test("Adi Jaya","S1","Tetap",2002);
+    test K2 = new test("Adi Maya","S1","Kontrak",2015);
+
+    System.out.println("Nama Lengkap    : "+ K1.NamaLengkap);
+    System.out.println("Pendidikan      : "+ K1.Pendidikan);
+    System.out.println("Status Karyawan : "+ K1.Status);
+    System.out.println("Tahun Masuk     : "+ K1.ThnMasuk);
+    System.out.print("Gaji Pokok : ");
+    System.out.println(K2.GajiPokok(K1.Status));
+    System.out.print("Tunjangan : ");
+    System.out.println(K1.HitTunjangan(K1.Pendidikan,K1.ThnMasuk));
+
+    System.out.println("------------------------------------------");
+    
+    System.out.println("Nama Lengkap    : "+ K2.NamaLengkap);
+    System.out.println("Pendidikan      : "+ K2.Pendidikan);
+    System.out.println("Status Karyawan : "+ K2.Status);
+    System.out.println("Tahun Masuk     : "+ K2.ThnMasuk);
+    System.out.print("Gaji Pokok : ");
+    System.out.println(K2.GajiPokok(K2.Status));
+    System.out.print("Tunjangan : ");
+    System.out.println(K2.HitTunjangan(K2.Pendidikan,K2.ThnMasuk));
+
+    test[] k = new test[10];
+
+    Scanner sc = new Scanner(System.in);
+    String N, P, S;
+    int T;
+
+    for (int i = 0; i < 10; i++) {
+            N = sc.next();
+            P = sc.next();
+            S = sc.next();
+            T = sc.nextInt();
+            sc.nextLine();
+            k[i] = new test(N, P, S, T);
+    }
+
+    for (int i = 0; i < 10; i++) {
+        System.out.println("------------------------------------------");
+        System.out.println("Nama Lengkap    : " + k[i].NamaLengkap);
+        System.out.println("Pendidikan      : " + k[i].Pendidikan);
+        System.out.println("Status Karyawan : " + k[i].Status);
+        System.out.println("Tahun Masuk     : " + k[i].ThnMasuk);
+
+        System.out.print("Gaji Pokok : ");
+        System.out.println(k[i].GajiPokok(k[i].Status));
+
+        System.out.print("Tunjangan : ");
+        System.out.println(k[i].HitTunjangan(k[i].Pendidikan, k[i].ThnMasuk));
+    }}
+
+private int HitungMasaKerja(int T){
+    return (2017 - T);
+}
+
+double GajiPokok (String S){
+        double GaPok=0;
+        
+        if(S.equals("Tetap"))
+            GaPok=3500000;
+        else if (S.equals ("Kontrak"))
+            GaPok= 500000;
+        return GaPok;
+            
+    }
+    double HitTunjangan (String P, int T){
+        int MK = HitungMasaKerja(T);
+        double Tunjangan;
+        
+        if(P.equals("S1") && MK >= 5)
+            Tunjangan = 25000000;
+        else if(P.equals("S1") && MK >=10)
+            Tunjangan = 5000000;
+        else if(P.equals("S2") && MK >=5)
+            Tunjangan = 5000000;
+         else if(P.equals("S2") && MK >=10)
+            Tunjangan = 100000000;
+        else
+             Tunjangan = 1000000;
+        return Tunjangan;
+        
+    }
+}
