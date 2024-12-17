@@ -6,7 +6,6 @@ INSERT INTO tanaman (id_tanaman, jenis, nm_tanaman, jumlah) VALUES
 (4, 'Buah-buahan', 'Anggur', 6),
 (5, 'Buah-buahan', 'Apel', 2),
 (6, 'Sayuran', 'Tomat', 8),
-(7, 'Sayuran', 'Bawang', 10);
 
 
 //tabel bikin
@@ -34,7 +33,6 @@ INSERT INTO jadwal (id_tanaman, jenis, nm_perlakuan, waktu) VALUES
 (4, D, 'Buah-buahan', 'Anggur'),
 (5, E, 'Buah-buahan', 'Apel'),
 (6, F, 'Sayuran', 'Tomat'),
-(7, G, 'Sayuran', 'Bawang');
 
 CREATE TABLE jadwal (
     id_perlakuan INT PRIMARY KEY,
@@ -52,7 +50,6 @@ INSERT INTO jadwal (id_tanaman, id_perlakuan, nm_perlakuan, waktu) VALUES
 (4, 44, 'Potong Tangkai', '6:30:00'),
 (5, 55, 'Potong Tangkai', '12:30:00'),
 (6, 66, 'Siram', '8:30:00'),
-(7, 77, 'Siram', '10:30:00');
 
 
 CREATE TABLE orang (
