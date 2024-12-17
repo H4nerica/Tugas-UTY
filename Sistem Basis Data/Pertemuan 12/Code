@@ -1,0 +1,8 @@
+INSERT INTO tanaman (id_tanaman, jenis, nm_tanaman, jumlah) VALUES
+(1, 'Sayuran', 'Bayam', 20),
+(2, 'Sayuran', 'Kangkung', 40),
+(3, 'Buah-buahan', 'Rambutan', 8),
+(4, 'Buah-buahan', 'Anggur', 6),
+(5, 'Buah-buahan', 'Apel', 2),
+(6, 'Sayuran', 'Tomat', 8),
+(7, 'Sayuran', 'Bawang', 10);
