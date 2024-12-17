@@ -75,3 +75,9 @@ GROUP BY jenis;
 SELECT jadwal.id_tanaman, jadwal.nm_perlakuan, jadwal.waktu, orang.nm_anggota
 FROM jadwal
 JOIN orang ON jadwal.id_perlakuan = orang.id_perlakuan;
+
+3.
+SELECT DISTINCT tanaman.nm_tanaman, orang.nm_anggota
+FROM tanaman
+JOIN jadwal ON tanaman.id_tanaman = jadwal.id_tanaman
+JOIN orang ON jadwal.id_perlakuan = orang.id_perlakuan;
