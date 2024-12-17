@@ -72,3 +72,6 @@ FROM tanaman
 GROUP BY jenis;
 
 2.
+SELECT jadwal.id_tanaman, jadwal.nm_perlakuan, jadwal.waktu, orang.nm_anggota
+FROM jadwal
+JOIN orang ON jadwal.id_perlakuan = orang.id_perlakuan;
