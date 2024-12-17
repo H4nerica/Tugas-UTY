@@ -1,3 +1,4 @@
+//data masukin
 INSERT INTO tanaman (id_tanaman, jenis, nm_tanaman, jumlah) VALUES
 (1, 'Sayuran', 'Bayam', 20),
 (2, 'Sayuran', 'Kangkung', 40),
@@ -6,3 +7,49 @@ INSERT INTO tanaman (id_tanaman, jenis, nm_tanaman, jumlah) VALUES
 (5, 'Buah-buahan', 'Apel', 2),
 (6, 'Sayuran', 'Tomat', 8),
 (7, 'Sayuran', 'Bawang', 10);
+
+
+//tabel bikin
+CREATE TABLE tanaman (
+    id_tanaman INT PRIMARY KEY,
+    kategori VARCHAR(50),
+    nama_tanaman VARCHAR(100),
+    jumlah INT
+);
+
+//perawatan bikin tabel
+CREATE TABLE perawatan (
+    id_perawatan INT PRIMARY KEY,
+    id_tanaman INT,
+    waktu VARCHAR(50),
+    nm_perlakuan VARCHAR(100),
+    FOREIGN KEY (id_tanaman) REFERENCES tanaman(id_tanaman)
+);
+
+
+INSERT INTO jadwal (id_tanaman, jenis, nm_perlakuan, waktu) VALUES
+(1, A, 'Sayuran', 'Bayam'),
+(2, B, 'Sayuran', 'Kangkung'),
+(3, C, 'Buah-buahan', 'Rambutan'),
+(4, D, 'Buah-buahan', 'Anggur'),
+(5, E, 'Buah-buahan', 'Apel'),
+(6, F, 'Sayuran', 'Tomat'),
+(7, G, 'Sayuran', 'Bawang');
+
+CREATE TABLE jadwal (
+    id_perlakuan INT PRIMARY KEY,
+    id_tanaman INT,
+    nm_perlakuan VARCHAR(100),
+    waktu time,
+    FOREIGN KEY (id_tanaman) REFERENCES tanaman(id_tanaman)
+);
+
+
+INSERT INTO jadwal (id_tanaman, id_perlakuan, nm_perlakuan, waktu) VALUES
+(1, 11, 'Siram', '10:50:00'),
+(2, 22, 'Potong Tangkai', '10:35:12'),
+(3, 33, 'Siram', '8:45:00'),
+(4, 44, 'Potong Tangkai', '6:30:00'),
+(5, 55, 'Potong Tangkai', '12:30:00'),
+(6, 66, 'Siram', '8:30:00'),
+(7, 77, 'Siram', '10:30:00');
