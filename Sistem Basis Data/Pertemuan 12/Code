@@ -1,61 +1,52 @@
-//data masukin
-INSERT INTO tanaman (id_tanaman, jenis, nm_tanaman, jumlah) VALUES
-(1, 'Sayuran', 'Bayam', 20),
-(2, 'Sayuran', 'Kangkung', 40),
-(3, 'Buah-buahan', 'Rambutan', 8),
-(4, 'Buah-buahan', 'Anggur', 6),
-(5, 'Buah-buahan', 'Apel', 2),
-(6, 'Sayuran', 'Tomat', 8),
-
 
 //tabel bikin
 CREATE TABLE tanaman (
     id_tanaman INT PRIMARY KEY,
-    kategori VARCHAR(50),
-    nama_tanaman VARCHAR(100),
-    jumlah INT
+    jenis VARCHAR(50),
+    nama_tumbuhan VARCHAR(100),
+    stok INT
 );
+
+//data masukin
+INSERT INTO tanaman (id_tanaman, jenis, nm_tanaman, stok) VALUES
+(10, 'Sayuran', 'Bayam', 20),
+(20, 'Sayuran', 'Kangkung', 40),
+(30, 'Hias', 'Tembakau', 81),
+(40, 'Hias', 'Cabai', 16),
+(50, 'Buah-buahan', 'Apel', 12),
+
+
 
 //perawatan bikin tabel
 CREATE TABLE perawatan (
     id_perawatan INT PRIMARY KEY,
     id_tanaman INT,
     waktu VARCHAR(50),
-    nm_perlakuan VARCHAR(100),
+    nama_jadwal VARCHAR(100),
     FOREIGN KEY (id_tanaman) REFERENCES tanaman(id_tanaman)
 );
 
-
-INSERT INTO jadwal (id_tanaman, jenis, nm_perlakuan, waktu) VALUES
-(1, A, 'Sayuran', 'Bayam'),
-(2, B, 'Sayuran', 'Kangkung'),
-(3, C, 'Buah-buahan', 'Rambutan'),
-(4, D, 'Buah-buahan', 'Anggur'),
-(5, E, 'Buah-buahan', 'Apel'),
-(6, F, 'Sayuran', 'Tomat'),
-
 CREATE TABLE jadwal (
-    id_perlakuan INT PRIMARY KEY,
+    id_jadwal INT PRIMARY KEY,
     id_tanaman INT,
-    nm_perlakuan VARCHAR(100),
+    nama_jadwal VARCHAR(100),
     waktu time,
     FOREIGN KEY (id_tanaman) REFERENCES tanaman(id_tanaman)
 );
 
 
-INSERT INTO jadwal (id_tanaman, id_perlakuan, nm_perlakuan, waktu) VALUES
+INSERT INTO jadwal (id_tanaman, id_jadwal, nama_jadwal, waktu) VALUES
 (1, 11, 'Siram', '10:50:00'),
 (2, 22, 'Potong Tangkai', '10:35:12'),
 (3, 33, 'Siram', '8:45:00'),
 (4, 44, 'Potong Tangkai', '6:30:00'),
 (5, 55, 'Potong Tangkai', '12:30:00'),
-(6, 66, 'Siram', '8:30:00'),
 
 
 CREATE TABLE orang (
-    id_perlakuan INT,
-    nm_anggota VARCHAR(50),
-    FOREIGN KEY (id_perlakuan) REFERENCES jadwal(id_perlakuan)
+    id_jadwal INT,
+    nama_member VARCHAR(50),
+    FOREIGN KEY (id_jadwal) REFERENCES jadwal(id_jadwal)
 );
 
 
@@ -64,17 +55,17 @@ CREATE TABLE orang (
 //soal
 
 1. 
-SELECT jenis, SUM(jumlah) AS total_tanaman
+SELECT jenis, SUM(stok) AS total_tanaman
 FROM tanaman
 GROUP BY jenis;
 
 2.
-SELECT jadwal.id_tanaman, jadwal.nm_perlakuan, jadwal.waktu, orang.nm_anggota
+SELECT jadwal.id_tanaman, jadwal.nama_jadwal, jadwal.waktu, orang.nama_member
 FROM jadwal
-JOIN orang ON jadwal.id_perlakuan = orang.id_perlakuan;
+JOIN orang ON jadwal.id_jadwal = orang.id_jadwal;
 
 3.
-SELECT DISTINCT tanaman.nm_tanaman, orang.nm_anggota
+SELECT DISTINCT tanaman.nm_tanaman, orang.nama_member
 FROM tanaman
 JOIN jadwal ON tanaman.id_tanaman = jadwal.id_tanaman
-JOIN orang ON jadwal.id_perlakuan = orang.id_perlakuan;
+JOIN orang ON jadwal.id_jadwal = orang.id_jadwal;
