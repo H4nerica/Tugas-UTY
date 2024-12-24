@@ -1,0 +1,19 @@
+const int reedPin = 2;  // Signal (DO) pin connected to Digital Pin 2
+int reedState = 0;
+
+void setup() {
+  pinMode(reedPin, INPUT);  // Set reed sensor pin as input
+  Serial.begin(9600);
+}
+
+void loop() {
+  reedState = digitalRead(reedPin);  // Read sensor state
+
+  if (reedState == HIGH) {
+    Serial.println("Magnet Detected!");
+  } else {
+    Serial.println("No Magnet Detected!");
+  }
+
+  delay(500);  // Small delay to avoid flooding the serial monitor
+}
