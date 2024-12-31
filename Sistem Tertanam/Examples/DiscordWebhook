@@ -1,0 +1,100 @@
+#include <ESP8266WiFi.h>          // For ESP8266, use this instead of WiFi.h
+#include <ESP8266HTTPClient.h>
+#include <WiFiClientSecure.h>
+
+// Replace these with your actual Wi-Fi credentials
+const char ssid[] = ".";           // Wi-Fi name (SSID) as "."
+const char pass[] = "00000000";    // Wi-Fi password
+
+// Your Discord Webhook URL
+const String discord_webhook = "https://discord.com/api/webhooks/1323599508420038796/vOqiGUG_hREinrbUrAjxuoQCCDmrX4KK7Uje6K2YcApV_pkmnEisNDu5RdoxyyYL2Pz8";
+
+// Define the TTS option (true or false as a string)
+const String discord_tts = "false";
+
+// Define the certificate as a string, as you provided it
+const char DISCORD_CERT[] PROGMEM = R"(
+-----BEGIN CERTIFICATE-----
+MIIDojCCA0mgAwIBAgIRAOX39QuxhqyAER9fYobHfuEwCgYIKoZIzj0EAwIwOzEL
+MAkGA1UEBhMCVVMxHjAcBgNVBAoTFUdvb2dsZSBUcnVzdCBTZXJ2aWNlczEMMAoG
+A1UEAxMDV0UxMB4XDTI0MTExNzAwMDc0NloXDTI1MDIxNTAwMDc0NVowFjEUMBIG
+A1UEAxMLZGlzY29yZC5jb20wWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAQnbHPQ
+6V2YmvnO/PuUeCT9r344/l9UigZeb7oTWRQjgXLSk5cyXDlvpTh8yf4YXs6aePxG
+ydJ9pDkgixfPLKlso4ICUTCCAk0wDgYDVR0PAQH/BAQDAgeAMBMGA1UdJQQMMAoG
+CCsGAQUFBwMBMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFDWZArc9V41yoPmds6f3
+dyBsrtyrMB8GA1UdIwQYMBaAFJB3kjVnxP+ozKnme9mAeXvMk/k4MF4GCCsGAQUF
+BwEBBFIwUDAnBggrBgEFBQcwAYYbaHR0cDovL28ucGtpLmdvb2cvcy93ZTEvNWZj
+MCUGCCsGAQUFBzAChhlodHRwOi8vaS5wa2kuZ29vZy93ZTEuY3J0MCUGA1UdEQQe
+MByCC2Rpc2NvcmQuY29tgg0qLmRpc2NvcmQuY29tMBMGA1UdIAQMMAowCAYGZ4EM
+AQIBMDYGA1UdHwQvMC0wK6ApoCeGJWh0dHA6Ly9jLnBraS5nb29nL3dlMS9EUDJQ
+Uzh6UW5Wcy5jcmwwggECBgorBgEEAdZ5AgQCBIHzBIHwAO4AdQDm0jFjQHeMwRBB
+Btdxuc7B0kD2loSG+7qHMh39HjeOUAAAAZM3qWQKAAAEAwBGMEQCIF8+L3RsGbDR
+CczvclVF2Gm8+8Ec11loZYFwInWySegFAiB8rQltd3cxEdgN1VG6W4vgxhKdW+d7
+josu77htBqE2zgB1AE51oydcmhDDOFts1N8/Uusd8OCOG41pwLH6ZLFimjnfAAAB
+kzepYAEAAAQDAEYwRAIgHQTr1yxg0U+WnPa7Njyj9ZM4bcjR9uy7ugc9edo379gC
+IC1Rk7zED2EA7044ispmnWemKSn4qwOuV8m9jM3QxxKiMAoGCCqGSM49BAMCA0cA
+MEQCIFcF2its2w3hVuNqv1kPMTe6EHe7J4KARk+Ws14v5iWyAiB20VXbahcvT8be
+HaWg4fCHFCiTOXXwJWKq64lhRlL7RA==
+-----END CERTIFICATE-----
+)";
+
+void connectWiFi() {
+  WiFi.begin(ssid, pass);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.print(".");
+  }
+  Serial.println("WiFi connected!");
+}
+
+void sendDiscord(String content, String embedJson) {
+  WiFiClientSecure client; // Declare client
+  client.setInsecure();  // Bypass SSL cert validation (not recommended for production)
+
+  HTTPClient https;
+  if (https.begin(client, discord_webhook)) {  // Connect to the Discord webhook URL
+    https.addHeader("Content-Type", "application/json");
+
+    // Construct the JSON payload with content and embeds (if provided)
+    String jsonPayload = "{\"content\":\"" + content + "\",\"tts\":" + discord_tts + ",\"embeds\": [" + embedJson + "]}";
+
+    int httpCode = https.POST(jsonPayload);  // Send the POST request
+
+    if (httpCode > 0) {  // Check if the request was successful
+      if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
+        String payload = https.getString();  // Get the response from Discord
+        Serial.print("HTTP Response: ");
+        Serial.println(payload);
+      }
+    } else {
+      Serial.print("HTTP Post failed: ");
+      Serial.println(https.errorToString(httpCode).c_str());
+    }
+
+    https.end();  // End the HTTPS connection
+  }
+}
+
+void sendDiscordMessage(String content) {
+  sendDiscord(content, "");  // Pass empty embeds
+}
+
+void sendDiscordEmbeds(String embeds) {
+  sendDiscord("", embeds);  // Pass empty content, just embeds
+}
+
+void setup() {
+  Serial.begin(115200);  // Start serial communication at 115200 baud
+  connectWiFi();  // Connect to Wi-Fi
+  
+  // Send a simple message to Discord
+  sendDiscordMessage("( ͡° ͜ʖ ͡°)");
+
+  // Example of sending a message with embeds
+  String embedJson = "[{\"title\":\"My Embed\",\"description\":\"This is an example embed\",\"color\":5814783}]";
+  sendDiscordEmbeds(embedJson);
+}
+
+void loop() {
+  // Nothing needed here, since the message is sent in setup
+}
