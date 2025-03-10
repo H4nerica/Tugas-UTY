@@ -1,1 +1,14 @@
 https://www.kuyhaa.me/adobe-premiere-pro-2025-full-3.html
+
+
+
+    <h3>Postingan Khusus:</h3>
+    <?php
+    $imagePost = new ImagePost();
+    $imagePost->setPostData(1, 1, 'Image Post', 'images/post1.jpg');
+    $videoPost = new VideoPost();
+    $videoPost->setPostData(2, 1, 'Video Post', 'videos/post1.mp4');
+    ?>
+
+    <p><?php echo $imagePost->getTitle(); ?>: <?php echo $imagePost->getContent(); ?></p>
+    <p><?php echo $videoPost->getTitle(); ?>: <?php echo $videoPost->getContent(); ?></p>
