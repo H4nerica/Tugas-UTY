@@ -1,14 +1,76 @@
-https://www.kuyhaa.me/adobe-premiere-pro-2025-full-3.html
+If you're looking to set the Gigabit Ethernet ports (such as GigabitEthernet0/1, GigabitEthernet0/2, etc.) to IP addresses like 192.168.1.1, 192.168.2.1, 192.168.3.1, and so on, here’s how you can manually configure the Gigabit Ethernet interfaces on a router like Cisco 1841 or Cisco 2811.
+Step-by-Step Instructions:
+1. Enter Global Configuration Mode
 
+    Access the router's CLI.
 
+    Enter privileged exec mode:
 
-    <h3>Postingan Khusus:</h3>
-    <?php
-    $imagePost = new ImagePost();
-    $imagePost->setPostData(1, 1, 'Image Post', 'images/post1.jpg');
-    $videoPost = new VideoPost();
-    $videoPost->setPostData(2, 1, 'Video Post', 'videos/post1.mp4');
-    ?>
+Router# enable
 
-    <p><?php echo $imagePost->getTitle(); ?>: <?php echo $imagePost->getContent(); ?></p>
-    <p><?php echo $videoPost->getTitle(); ?>: <?php echo $videoPost->getContent(); ?></p>
+Then, enter global configuration mode:
+
+    Router# configure terminal
+
+2. Configure the GigabitEthernet Interfaces
+
+Let’s assume you have three GigabitEthernet interfaces on the router (Gig0/1, Gig0/2, and Gig0/3), and you want to assign them IP addresses as follows:
+
+    GigabitEthernet0/1: 192.168.1.1
+    GigabitEthernet0/2: 192.168.2.1
+    GigabitEthernet0/3: 192.168.3.1
+
+You would configure each interface as follows:
+For GigabitEthernet0/1:
+
+    Enter interface configuration mode for GigabitEthernet0/1:
+
+Router(config)# interface GigabitEthernet0/1
+
+Assign the IP address and subnet mask:
+
+Router(config-if)# ip address 192.168.1.1 255.255.255.0
+
+Enable the interface:
+
+Router(config-if)# no shutdown
+
+Exit interface configuration mode:
+
+    Router(config-if)# exit
+
+For GigabitEthernet0/2:
+
+    Enter interface configuration mode for GigabitEthernet0/2:
+
+Router(config)# interface GigabitEthernet0/2
+
+Assign the IP address and subnet mask:
+
+Router(config-if)# ip address 192.168.2.1 255.255.255.0
+
+Enable the interface:
+
+Router(config-if)# no shutdown
+
+Exit interface configuration mode:
+
+    Router(config-if)# exit
+
+For GigabitEthernet0/3:
+
+    Enter interface configuration mode for GigabitEthernet0/3:
+
+Router(config)# interface GigabitEthernet0/3
+
+Assign the IP address and subnet mask:
+
+Router(config-if)# ip address 192.168.3.1 255.255.255.0
+
+Enable the interface:
+
+Router(config-if)# no shutdown
+
+Exit interface configuration mode:
+
+Router(config-if)# exit
