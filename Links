@@ -74,3 +74,9 @@ Router(config-if)# no shutdown
 Exit interface configuration mode:
 
 Router(config-if)# exit
+
+
+
+
+
+https://akhmadzaqi.notion.site/MVC-Model-View-Controller-1ea95b7fa78d804fb272fbf161daa23a?pvs=4
