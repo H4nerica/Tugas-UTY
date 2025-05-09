@@ -80,3 +80,64 @@ Router(config-if)# exit
 
 
 https://akhmadzaqi.notion.site/MVC-Model-View-Controller-1ea95b7fa78d804fb272fbf161daa23a?pvs=4
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Counter with Speech</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: sans-serif;
+      background-color: #f0f0f0;
+    }
+    .counter-box {
+      text-align: center;
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 18px;
+    }
+    #count {
+      font-size: 48px;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="counter-box">
+    <div id="count">0</div>
+    <button onclick="changeCount(-1)">-</button>
+    <button onclick="changeCount(1)">+</button>
+    <br>
+    <button onclick="speakCount()">Speak</button>
+  </div>
+
+  <script>
+    let count = 0;
+    const countDisplay = document.getElementById("count");
+
+    function changeCount(amount) {
+      count += amount;
+      countDisplay.textContent = count;
+    }
+
+    function speakCount() {
+      const utterance = new SpeechSynthesisUtterance("The number is " + count);
+      speechSynthesis.speak(utterance);
+    }
+  </script>
+</body>
+</html>
