@@ -141,3 +141,57 @@ https://akhmadzaqi.notion.site/MVC-Model-View-Controller-1ea95b7fa78d804fb272fbf
   </script>
 </body>
 </html>
+
+
+
+
+Got it! Here’s a detailed overview of the topics related to "Penjadwalan dalam Multimedia" (Scheduling in Multimedia):
+
+### 1. Penjadwalan Aliran Data Multimedia
+- **Definisi:**
+  Penjadwalan aliran data multimedia merujuk pada proses pengelolaan dan pengaturan aliran data multimedia (seperti audio dan video) untuk memastikan pengiriman yang efisien dan berkualitas.
+  
+- **Karakteristik Aliran Data:**
+  - **Kontinu:** Data multimedia sering kali bersifat kontinu, memerlukan pengiriman yang berkelanjutan.
+  - **Variabilitas Bit Rate:** Data multimedia dapat memiliki variasi dalam kecepatan bit, yang mempengaruhi cara penjadwalan.
+
+- **Tantangan:**
+  - **Sinkronisasi:** Memastikan audio dan video tetap sinkron.
+  - **Variabilitas Latensi:** Latensi yang tidak konsisten dapat mengganggu pengalaman pengguna.
+
+### 2. Manajemen Buffer
+- **Peran Buffer:**
+  Buffer digunakan untuk menyimpan data sementara sebelum diproses atau dikirim. Ini membantu mengatasi perbedaan antara kecepatan pengiriman data dan kecepatan pemrosesan.
+
+- **Teknik Manajemen Buffer:**
+  - **Buffer Dinamis:** Ukuran buffer dapat disesuaikan berdasarkan kondisi jaringan.
+  - **Buffer Statis:** Ukuran buffer tetap, yang dapat menyebabkan masalah jika tidak cukup besar untuk menangani lonjakan data.
+
+### 3. Delay Sensitive Delivery
+- **Definisi:**
+  Pengiriman yang sensitif terhadap delay adalah pengiriman data yang memerlukan latensi rendah untuk menjaga kualitas pengalaman pengguna, seperti dalam video konferensi atau permainan online.
+
+- **Teknik untuk Meminimalkan Delay:**
+  - **Prioritas Paket Data:** Memberikan prioritas lebih tinggi pada paket yang lebih sensitif terhadap delay.
+  - **Quality of Service (QoS):** Menggunakan mekanisme QoS untuk menjamin bandwidth dan mengurangi latensi.
+
+### 4. Real-Time Delivery
+- **Definisi:**
+  Pengiriman real-time merujuk pada pengiriman data yang harus terjadi dalam waktu nyata, tanpa penundaan yang signifikan.
+
+- **Algoritma Penjadwalan Real-Time:**
+  - **Rate Monotonic Scheduling (RMS):** Algoritma yang memberikan prioritas lebih tinggi pada tugas dengan periode lebih pendek.
+  - **Earliest Deadline First (EDF):** Algoritma yang memberikan prioritas pada tugas yang memiliki tenggat waktu terdekat.
+
+### 5. Task Prioritization
+- **Pentingnya Prioritization:**
+  Dalam aplikasi multimedia, beberapa tugas lebih penting daripada yang lain. Prioritization membantu memastikan bahwa tugas yang lebih kritis mendapatkan sumber daya yang diperlukan.
+
+- **Metode Prioritization:**
+  - **Prioritas Statis:** Prioritas ditentukan sebelumnya dan tidak berubah.
+  - **Prioritas Dinamis:** Prioritas dapat berubah berdasarkan kondisi saat ini, seperti beban sistem.
+
+### Kesimpulan
+Penjadwalan dalam multimedia adalah aspek penting untuk memastikan pengiriman data yang efisien dan berkualitas. Dengan memahami aliran data, manajemen buffer, pengiriman yang sensitif terhadap delay, pengiriman real-time, dan prioritas tugas, kita dapat meningkatkan pengalaman pengguna dalam aplikasi multimedia.
+
+Feel free to expand on any of these sections or ask for more specific details!
