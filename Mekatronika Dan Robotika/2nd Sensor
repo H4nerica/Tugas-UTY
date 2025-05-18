@@ -1,0 +1,55 @@
+const int usSensorPin1 = 3;  // First ultrasonic sensor pin
+const int usSensorPin2 = 4;  // Second ultrasonic sensor pin (change if needed)
+
+const int outputPin = 6;
+const int led = 5;
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(outputPin, OUTPUT);
+  pinMode(led, OUTPUT);
+  digitalWrite(outputPin, LOW); // Ensure output starts OFF
+  digitalWrite(led, LOW);        // Ensure LED starts OFF
+}
+
+float readUltrasonicDistance(int pin) {
+  // Trigger the sensor
+  pinMode(pin, OUTPUT);
+  digitalWrite(pin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(pin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(pin, LOW);
+
+  // Set pin to input to read echo
+  pinMode(pin, INPUT);
+  long duration = pulseIn(pin, HIGH);
+
+  // Calculate distance in cm
+  float distance = (duration * 0.034) / 2;
+  return distance;
+}
+
+void loop() {
+  float distance1 = readUltrasonicDistance(usSensorPin1);
+  float distance2 = readUltrasonicDistance(usSensorPin2);
+
+  Serial.print("Distance Sensor 1: ");
+  Serial.print(distance1);
+  Serial.println(" cm");
+
+  Serial.print("Distance Sensor 2: ");
+  Serial.print(distance2);
+  Serial.println(" cm");
+
+  // Turn on outputPin if either sensor detects object <= 50 cm
+  if ((distance1 > 0 && distance1 <= 50.0) || (distance2 > 0 && distance2 <= 50.0)) {
+    digitalWrite(outputPin, HIGH);  // Turn ON pin 6
+    digitalWrite(led, LOW);         // Turn OFF LED
+  } else {
+    digitalWrite(outputPin, LOW);   // Turn OFF pin 6
+    digitalWrite(led, HIGH);         // Turn ON LED
+  }
+
+  delay(200);
+}
