@@ -1,10 +1,13 @@
 const int usSensorPin = 3;
 const int outputPin = 6;
+const int led = 5;
 
 void setup() {
   Serial.begin(9600);
   pinMode(outputPin, OUTPUT);
   digitalWrite(outputPin, LOW); // Make sure output starts OFF
+  pinMode(led, OUTPUT);
+  digitalWrite(led, LOW);
 }
 
 void loop() {
@@ -26,8 +29,10 @@ void loop() {
 
   if (distance <= 50.0 && distance > 0) {  // Also check distance > 0 to avoid invalid readings
     digitalWrite(outputPin, HIGH);          // Turn ON pin 6
+    digitalWrite(led, LOW); 
   } else {
     digitalWrite(outputPin, LOW);           // Turn OFF pin 6
+    digitalWrite(led, HIGH); 
   }
 
   delay(100);
