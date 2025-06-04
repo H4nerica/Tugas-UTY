@@ -1,1 +1,27 @@
 okay now i want you to make a code like this. robot i had ultrasonic on front ir side. so if no wall or both wall on side. foward. and if both or no wall but wall front on 20cm. move little bit like move bit stop check move bit stop check until 10cm. then then it just stop like thinking eh? lol. and after that do the turn to the side with no wall. or if there is no wall on both side turn left basic maze solver logic right?. okay after turn  stop again check front. and repeat the logic again. and btw since after it turn it for example to the left it detect the front no wall, right wall now before it was front. and left no wall maybe avoid going back to the left since that was the path before right?. so maybe move foward until it sense both side wall again. or if  it doesnt sence the side wall on the left only turn again if there is a wall on the front. and repeat the first logic
+
+
+gpt thing
+Yes, this code implements all the core logic you described:
+
+    If both IR sensors detect wall or both detect no wall → move forward
+
+    If front ultrasonic detects a wall closer than 20 cm → stop immediately and decide turning
+
+    If all sides blocked → turn 180° (since you can’t go backward)
+
+    If one side is open → turn toward the open side (with logic to avoid immediate repeated turns the same way)
+
+    If both sides open → turn left by default, but avoid repeated immediate left turns (will try right then)
+
+    After turning, the robot moves forward for a short time before making new decisions, preventing immediate back-to-back turns
+
+    It tracks the last turn direction to prevent the robot from spinning in place endlessly or going back the same way right after turning
+
+What it doesn't do here:
+
+    Gradual step-by-step approach to front walls (you wanted to remove that for now)
+
+    Complex memory of entire maze path (just the last turn tracked)
+
+    Speed variations (forward and turn speed are fixed constants)
