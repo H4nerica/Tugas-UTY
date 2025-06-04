@@ -1,1 +1,129 @@
+// ESP Robot Maze Navigation Logic with Front Ultrasonic and Side IR Sensors
 
+const int motorLeft = D1;    
+const int motorRight = D2;   
+
+const int ECHO_PIN  = D7;     
+const int TRIG_PIN  = D8;     
+
+const int IR_LEFT   = D5;     
+const int IR_RIGHT  = D6;    
+
+const long FRONT_WALL_DISTANCE_THRESHOLD = 14; // cm
+
+bool lastTurnLeft = false;
+
+void setup() {
+  Serial.begin(115200);
+
+  pinMode(motorLeft, OUTPUT);
+  pinMode(motorRight, OUTPUT);
+
+  pinMode(ECHO_PIN, INPUT);
+  pinMode(TRIG_PIN, OUTPUT);
+
+  pinMode(IR_LEFT, INPUT);
+  pinMode(IR_RIGHT, INPUT);
+}
+
+void loop() {
+  bool leftWall = isLeftWall();
+  bool rightWall = isRightWall();
+  bool frontWall = isFrontWall();
+
+  if (!frontWall) {
+    // Front is clear: move forward regardless of side sensors
+    moveForward();
+    Serial.println("Front clear: moving forward");
+    lastTurnLeft = false; // reset last turn as moving forward
+  }
+  else {
+    // Front wall detected: stop and decide turn
+    stopMotors();
+    Serial.println("Front wall detected: stopped to decide turn");
+
+    delay(100); // short delay for stabilization
+
+    if (!leftWall && rightWall) {
+      turnLeftAndStop();
+      lastTurnLeft = true;
+      Serial.println("Turning left as right blocked");
+    }
+    else if (leftWall && !rightWall) {
+      turnRightAndStop();
+      lastTurnLeft = false;
+      Serial.println("Turning right as left blocked");
+    }
+    else if (leftWall && rightWall) {
+      // Both sides blocked
+      turn180AndStop();
+      Serial.println("Both sides blocked: performing 180-degree turn");
+    }
+  }
+
+  delay(100); // small loop delay
+}
+
+// Helper functions
+
+bool isLeftWall() {
+  return digitalRead(IR_LEFT) == LOW; // LOW means wall detected
+}
+
+bool isRightWall() {
+  return digitalRead(IR_RIGHT) == LOW; // LOW means wall detected
+}
+
+bool isFrontWall() {
+  long duration, distance;
+
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+
+  duration = pulseIn(ECHO_PIN, HIGH, 20000); // timeout 20ms
+  if (duration == 0) {
+    return false; // No echo received (no obstacle)
+  }
+
+  distance = duration * 0.034 / 2; // Calculate distance in cm
+  return (distance <= FRONT_WALL_DISTANCE_THRESHOLD);
+}
+
+// Motor control functions
+void moveForward() {
+  digitalWrite(motorLeft, HIGH);
+  digitalWrite(motorRight, HIGH);
+}
+
+void stopMotors() {
+  digitalWrite(motorLeft, LOW);
+  digitalWrite(motorRight, LOW);
+}
+
+void turnLeftAndStop() {
+  digitalWrite(motorLeft, LOW);
+  digitalWrite(motorRight, HIGH);
+  delay(510); // Adjust delay for turn duration
+  stopMotors();
+  delay(1000); // <-- pause after turn
+}
+
+void turnRightAndStop() {
+  digitalWrite(motorLeft, HIGH);
+  digitalWrite(motorRight, LOW);
+  delay(530); // Adjust delay for turn duration
+  stopMotors();
+  delay(1000); // <-- pause after turn
+}
+
+void turn180AndStop() {
+  // Perform a 180-degree turn (either direction)
+  digitalWrite(motorLeft, HIGH);
+  digitalWrite(motorRight, LOW);
+  delay(1040); // Adjust delay for 180-degree turn duration
+  stopMotors();
+  delay(1000); // <-- pause after turn
+}
