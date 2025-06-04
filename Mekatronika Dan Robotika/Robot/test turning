@@ -1,0 +1,135 @@
+#include <ESP8266WiFi.h>
+
+// Motor pins - single PWM pin per motor, forward only
+const int motorLeft  = D1;  // Left motor PWM pin
+const int motorRight = D2;  // Right motor PWM pin
+
+int turnDelay = 600;        // Default turn duration in ms (adjust this for precise 90°)
+const int turnSpeed = 800;  // PWM speed during turning (0-1023)
+
+// WiFi AP setup
+const char* ssid = "ESP_Control";
+const char* password = "";  // No password for simplicity
+
+WiFiServer server(23);      // Telnet port
+String inputBuffer = "";
+
+void setup() {
+  Serial.begin(9600);
+
+  pinMode(motorLeft, OUTPUT);
+  pinMode(motorRight, OUTPUT);
+
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, LOW); // ON (inverted on ESP8266)
+
+  Serial.println("Starting Access Point...");
+  WiFi.softAP(ssid, password);
+
+  IPAddress IP = WiFi.softAPIP();
+  Serial.print("WiFi SSID: ");
+  Serial.println(ssid);
+  Serial.print("AP IP: ");
+  Serial.println(IP);
+
+  server.begin();
+  Serial.println("TCP server started on port 23");
+}
+
+void loop() {
+  WiFiClient client = server.available();
+
+  if (client) {
+    Serial.println("Client connected");
+    inputBuffer = "";
+
+    unsigned long lastReceiveTime = millis();
+
+    while (client.connected()) {
+      // Timeout: disconnect if no data received for 10 seconds
+      if (millis() - lastReceiveTime > 10000) {
+        Serial.println("Client timeout");
+        break;
+      }
+
+      while (client.available()) {
+        char c = client.read();
+        Serial.print(c);
+
+        if (c == '\n' || c == '\r') {
+          inputBuffer.trim();
+
+          if (inputBuffer.length() > 0) {  // Ignore empty lines
+
+            if (inputBuffer.equalsIgnoreCase("LEFT")) {
+              client.println("Turning LEFT 90 degrees");
+              Serial.println("Turning LEFT 90 degrees");
+              turnLeft90();
+            }
+            else if (inputBuffer.equalsIgnoreCase("RIGHT")) {
+              client.println("Turning RIGHT 90 degrees");
+              Serial.println("Turning RIGHT 90 degrees");
+              turnRight90();
+            }
+            else if (isAllDigits(inputBuffer)) {
+              int val = inputBuffer.toInt();
+              if (val >= 100 && val <= 3000) {  // allow wider tuning range
+                turnDelay = val;
+                client.print("turnDelay updated to ");
+                client.println(turnDelay);
+                Serial.print("turnDelay updated to ");
+                Serial.println(turnDelay);
+              } else {
+                client.println("Invalid turnDelay. Use 100–3000 ms.");
+                Serial.println("Invalid turnDelay. Use 100–3000 ms.");
+              }
+            } else {
+              client.println("Unknown command. Use LEFT, RIGHT, or number.");
+              Serial.println("Unknown command: " + inputBuffer);
+            }
+          }
+          inputBuffer = "";
+        } else {
+          inputBuffer += c;
+        }
+        lastReceiveTime = millis();
+      }
+    }
+
+    client.stop();
+    Serial.println("Client disconnected");
+  }
+}
+
+// Spin robot LEFT 90 degrees (pivot turn)
+// One motor off, other runs forward for turnDelay ms
+void turnLeft90() {
+  analogWrite(motorLeft, 0);           // Left motor OFF
+  analogWrite(motorRight, turnSpeed);  // Right motor ON
+  delay(turnDelay);
+  stopMotors();
+}
+
+// Spin robot RIGHT 90 degrees (pivot turn)
+// Opposite motor runs forward, other OFF
+void turnRight90() {
+  analogWrite(motorLeft, turnSpeed);   // Left motor ON
+  analogWrite(motorRight, 0);          // Right motor OFF
+  delay(turnDelay);
+  stopMotors();
+}
+
+void stopMotors() {
+  // IMPORTANT: Use analogWrite with 0 to stop PWM motors
+  analogWrite(motorLeft, 0);
+  analogWrite(motorRight, 0);
+}
+
+// Check if string contains only digits
+bool isAllDigits(String str) {
+  if (str.length() == 0) return false;
+  for (unsigned int i = 0; i < str.length(); i++) {
+    if (!isDigit(str.charAt(i))) return false;
+  }
+  return true;
+}
