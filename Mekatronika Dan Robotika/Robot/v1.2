@@ -1,0 +1,162 @@
+const int motorLeft = D1;     // Left motor pin (single pin control)
+const int motorRight = D2;    // Right motor pin (single pin control)
+
+const int ECHO_PIN  = D7;     // Ultrasonic echo pin
+const int TRIG_PIN  = D8;     // Ultrasonic trigger pin
+
+const int IR_LEFT   = D5;     // Left IR sensor
+const int IR_RIGHT  = D6;    // Right IR sensor
+
+// Adjustable parameters
+const int turnDelay = 600;       // ms to run motors during a turn
+const int turnSpeed = 800;       // PWM speed during turning (0-1023)
+const int forwardSpeed = 800;    // PWM speed moving forward
+
+unsigned long lastTurnTime = 0;       // track last turn time
+const unsigned long turnCooldown = 700;  // cooldown time between turns in ms
+
+void setup() {
+  Serial.begin(9600);
+
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+
+  pinMode(motorLeft, OUTPUT);
+  pinMode(motorRight, OUTPUT);
+
+  pinMode(IR_LEFT, INPUT);
+  pinMode(IR_RIGHT, INPUT);
+}
+
+void loop() {
+  long duration;
+  float distance;
+
+  // Ultrasonic trigger
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+
+  // Read ultrasonic echo and convert to cm
+  duration = pulseIn(ECHO_PIN, HIGH);
+  distance = duration * 0.034 / 2;
+
+  // Read IR sensors (LOW means wall)
+  bool leftWall = isWallIR(IR_LEFT);
+  bool rightWall = isWallIR(IR_RIGHT);
+  bool frontWall = distance <= 20;  // 20 cm threshold
+
+  // Debug info
+  Serial.print("Front: "); Serial.print(frontWall);
+  Serial.print(" | Left: "); Serial.print(leftWall);
+  Serial.print(" | Right: "); Serial.println(rightWall);
+
+  unsigned long now = millis();
+  bool canTurn = (now - lastTurnTime) > turnCooldown;
+
+  if (frontWall) {
+    if (canTurn) {
+      lastTurnTime = now;
+      stopMotors();
+      delay(150);
+
+      if (leftWall && rightWall) {
+        // Wall all around → turn 180
+        spinAround();
+      } else if (leftWall && !rightWall) {
+        // Front + left wall → turn right
+        goRight();
+      } else if (!leftWall && rightWall) {
+        // Front + right wall → turn left
+        goLeft();
+      } else {
+        // Front wall only → default left
+        goLeft();
+      }
+    } else {
+      // During cooldown, keep moving forward slowly to avoid stalling
+      moveForward();
+    }
+  } else {
+    // No front wall
+    if (leftWall && rightWall) {
+      // Walls both sides → go forward
+      moveForward();
+    } else if (leftWall && !rightWall) {
+      // Wall left only → follow left wall (go forward)
+      moveForward();
+    } else if (!leftWall && rightWall) {
+      // Wall right only → follow right wall (go forward)
+      moveForward();
+    } else {
+      // No walls detected → spin to find wall (turn left)
+      if (canTurn) {
+        lastTurnTime = now;
+        stopMotors();
+        delay(100);
+        goLeft();
+      } else {
+        moveForward();
+      }
+    }
+  }
+
+  delay(50);
+}
+
+// IR sensor debounce check: true if wall detected (LOW)
+bool isWallIR(int pin) {
+  int count = 0;
+  for (int i=0; i<5; i++) {
+    if (digitalRead(pin) == LOW) count++;
+    delay(5);
+  }
+  return count >= 3;
+}
+
+// Motor movement functions (single-pin forward control)
+void moveForward() {
+  analogWrite(motorLeft, forwardSpeed);
+  analogWrite(motorRight, forwardSpeed);
+}
+
+void goLeft() {
+  analogWrite(motorLeft, 0);
+  analogWrite(motorRight, turnSpeed);
+  delay(turnDelay);
+  stopMotors();
+  delay(100);
+  moveForward();
+  delay(200);
+  stopMotors();
+}
+
+void goRight() {
+  analogWrite(motorLeft, turnSpeed);
+  analogWrite(motorRight, 0);
+  delay(turnDelay);
+  stopMotors();
+  delay(100);
+  moveForward();
+  delay(200);
+  stopMotors();
+}
+
+void spinAround() {
+  // Spin 180 degrees by turning right twice the turnDelay
+  analogWrite(motorLeft, turnSpeed);
+  analogWrite(motorRight, 0);
+  delay(turnDelay * 2);
+  stopMotors();
+  delay(100);
+  moveForward();
+  delay(200);
+  stopMotors();
+}
+
+void stopMotors() {
+  analogWrite(motorLeft, 0);
+  analogWrite(motorRight, 0);
+}
