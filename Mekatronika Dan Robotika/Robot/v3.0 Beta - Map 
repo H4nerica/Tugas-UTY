@@ -1,0 +1,126 @@
+// === Pin Setup ===
+const int motorLeft = D1;
+const int motorRight = D2;
+
+const int TRIG_PIN = D8;
+const int ECHO_PIN = D7;
+
+const int IR_LEFT = D5;
+const int IR_RIGHT = D6;
+
+// === Motor Speed ===
+const int motorLeftPWM = 1023;
+const int motorRightPWM = 250;
+
+// === Wall Detection Threshold ===
+const long FRONT_WALL_DISTANCE_THRESHOLD = 14; // cm
+
+// === State Variable ===
+int wall = 0; // Number of wall encounters
+
+void setup() {
+  Serial.begin(115200);
+
+  pinMode(motorLeft, OUTPUT);
+  pinMode(motorRight, OUTPUT);
+
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+
+  pinMode(IR_LEFT, INPUT);
+  pinMode(IR_RIGHT, INPUT);
+}
+
+void loop() {
+  if (!isFrontWall()) {
+    moveForward();
+    Serial.println("Front clear → Moving forward");
+  } else {
+    stopMotors();
+    Serial.print("Wall detected → Decision #");
+    Serial.println(wall);
+
+    // === Decision Map Based on Encounter Count ===
+    switch (wall) {
+      case 0:
+        Serial.println("Turn Left");
+        turnLeftAndStop();
+        break;
+      case 1:
+        Serial.println("Turn Left");
+        turnLeftAndStop();
+        break;
+      case 2:
+        Serial.println("Turn Right");
+        turnRightAndStop();
+        break;
+      case 3:
+        Serial.println("180 Turn");
+        turn180AndStop();
+        break;
+      default:
+        Serial.println("End of instructions");
+        stopMotors();
+        while (true); // Stop forever
+    }
+
+    wall++; // Move to next step
+  }
+
+  delay(100);
+}
+
+// === Sensor Functions ===
+
+bool isFrontWall() {
+  long duration;
+
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+
+  duration = pulseIn(ECHO_PIN, HIGH, 20000); // timeout 20ms
+  if (duration == 0) return false;
+
+  float distance = duration * 0.034 / 2;
+  return (distance <= FRONT_WALL_DISTANCE_THRESHOLD);
+}
+
+// === Movement Functions ===
+
+void moveForward() {
+  analogWrite(motorLeft, motorLeftPWM);
+  analogWrite(motorRight, motorRightPWM);
+}
+
+void stopMotors() {
+  digitalWrite(motorRight, LOW);
+  delay(20);
+  digitalWrite(motorLeft, LOW);
+}
+
+void turnLeftAndStop() {
+  analogWrite(motorLeft, 0);
+  analogWrite(motorRight, motorRightPWM);
+  delay(600);
+  stopMotors();
+  delay(1000);
+}
+
+void turnRightAndStop() {
+  analogWrite(motorLeft, motorLeftPWM);
+  analogWrite(motorRight, 0);
+  delay(600);
+  stopMotors();
+  delay(1000);
+}
+
+void turn180AndStop() {
+  analogWrite(motorLeft, motorLeftPWM);
+  analogWrite(motorRight, 0);
+  delay(1020);
+  stopMotors();
+  delay(1000);
+}
