@@ -1,0 +1,175 @@
+// === Pin Setup ===
+const int motorLeft = D1;
+const int motorRight = D2;
+
+const int TRIG_PIN = D8;
+const int ECHO_PIN = D7;
+
+const int IR_LEFT = D5;
+const int IR_RIGHT = D6;
+
+// === Motor Speed ===
+const int motorLeftPWM = 1023;
+const int motorRightPWM = 250;
+
+// === Wall Thresholds ===
+const long FRONT_WALL_DISTANCE_THRESHOLD = 14;  // for hard stop
+const long DEAD_END_DETECTION_DISTANCE = 28;    // early dead-end check
+
+// === State Variables ===
+int wall = 0;
+bool hasHandledDeadEnd = false;
+
+// === Setup ===
+void setup() {
+  Serial.begin(115200);
+
+  pinMode(motorLeft, OUTPUT);
+  pinMode(motorRight, OUTPUT);
+
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+
+  pinMode(IR_LEFT, INPUT);
+  pinMode(IR_RIGHT, INPUT);
+}
+
+// === Main Loop ===
+void loop() {
+  checkAndHandleDeadEndEarly();  // Run early dead-end detection once
+
+  if (!isFrontWall()) {
+    moveForward();
+    Serial.println("Front clear → Moving forward");
+  } else {
+    stopMotors();
+    Serial.print("Wall detected → Decision #");
+    Serial.println(wall);
+
+    // === Map Instructions ===
+    switch (wall) {
+      case 0:
+        Serial.println("Turn Left");
+        turnLeftAndStop();
+        break;
+      case 1:
+        Serial.println("Turn Left");
+        turnLeftAndStop();
+        break;
+      case 2:
+        Serial.println("Turn Right");
+        turnRightAndStop();
+        break;
+      case 3:
+        Serial.println("180 Turn");
+        turn180AndStop();
+        break;
+      default:
+        Serial.println("End of instructions");
+        stopMotors();
+        while (true); // Halt forever
+    }
+
+    wall++;  // Move to next map step
+  }
+
+  delay(100);
+}
+
+// === Distance Sensor Functions ===
+
+long getFrontDistance() {
+  long duration;
+
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+
+  duration = pulseIn(ECHO_PIN, HIGH, 20000); // 20ms timeout
+  if (duration == 0) return 999; // No echo received
+
+  return duration * 0.034 / 2;
+}
+
+bool isFrontWall() {
+  return getFrontDistance() <= FRONT_WALL_DISTANCE_THRESHOLD;
+}
+
+// === IR Wall Detection ===
+bool isLeftWall() {
+  return digitalRead(IR_LEFT) == LOW; // LOW = wall
+}
+
+bool isRightWall() {
+  return digitalRead(IR_RIGHT) == LOW; // LOW = wall
+}
+
+// === Early Dead-End Detection ===
+void checkAndHandleDeadEndEarly() {
+  long distance = getFrontDistance();
+
+  if (!hasHandledDeadEnd && distance <= DEAD_END_DETECTION_DISTANCE && distance > 10) {
+    Serial.print("Dead end ahead at distance: ");
+    Serial.println(distance);
+
+    stopMotors();
+
+    bool left = isLeftWall();
+    bool right = isRightWall();
+
+    if (!left && right) {
+      Serial.println("Early Dead End → Turning LEFT");
+      turnLeftAndStop();
+    } else if (!right && left) {
+      Serial.println("Early Dead End → Turning RIGHT");
+      turnRightAndStop();
+    } else if (!left && !right) {
+      Serial.println("Both sides open → Choosing LEFT");
+      turnLeftAndStop();
+    } else {
+      Serial.println("Completely blocked → 180 turn");
+      turn180AndStop();
+    }
+
+    hasHandledDeadEnd = true;
+    wall++; // Advance to next step
+  }
+}
+
+// === Movement Functions ===
+void moveForward() {
+  analogWrite(motorLeft, motorLeftPWM);
+  analogWrite(motorRight, motorRightPWM);
+}
+
+void stopMotors() {
+  digitalWrite(motorRight, LOW);
+  delay(20);
+  digitalWrite(motorLeft, LOW);
+}
+
+void turnLeftAndStop() {
+  analogWrite(motorLeft, 0);
+  analogWrite(motorRight, motorRightPWM);
+  delay(600);
+  stopMotors();
+  delay(1000);
+}
+
+void turnRightAndStop() {
+  analogWrite(motorLeft, motorLeftPWM);
+  analogWrite(motorRight, 0);
+  delay(600);
+  stopMotors();
+  delay(1000);
+}
+
+void turn180AndStop() {
+  analogWrite(motorLeft, motorLeftPWM);
+  analogWrite(motorRight, 0);
+  delay(1020);
+  stopMotors();
+  delay(1000);
+}
