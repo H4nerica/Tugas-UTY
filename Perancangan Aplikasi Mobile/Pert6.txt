@@ -1,0 +1,60 @@
+public class MenuUtama extends AppcompatActivity implements View.onClickListener{
+button 
+}
+
+imaster=findViewById (click listener here to call the form input view )
+form input view is like default panel for edit save and remove. just change the button and the header named.
+
+on click view display produk.
+
+btambah=findviewbyid(r.id.btnsimpan)
+btambah=findviewbyid(r.id.btnentry)
+
+all of those need on clik listener
+
+
+tambahdata.putextra("sid", "1")
+tambahdata.putextra("harga", "0")
+tambahdata.putextra("kode", "")
+tambahdata.putextra("sid", "")
+
+tambahdata.putextra("sid", strkode)
+tambahdata.putextra("harga", strjenis)
+tambahdata.putextra("kode", strharga)
+tambahdata.putextra("sid", "2")
+
+
+
+onstart()
+intent.masuk.getintent
+masuk.putextra()
+
+string strkd, strnama, strjenis, strharga, strkey, strid
+
+
+
+
+
+
+
+private void tampil(){
+tvharga.settext(strharga)
+tvmerk.settext(strjenis)
+tvkode.settext(kode)
+tvnama.settext(nama)
+switch (integer.parseInt(strid)){
+case 1:
+btnsimpan.settext("simpan")
+break;
+case 2:
+btnsimpan.settext("ubah")
+break;
+case 3:
+btnsimpan.settext("hapus")
+break;
+default:
+}}
+
+
+make global variable that hold the ui form id(edit,remove,save)
+and use switch cas to change the text on the button to either edit, remove, saved base o nthe id.
