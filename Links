@@ -1,206 +1,44 @@
-If you're looking to set the Gigabit Ethernet ports (such as GigabitEthernet0/1, GigabitEthernet0/2, etc.) to IP addresses like 192.168.1.1, 192.168.2.1, 192.168.3.1, and so on, here’s how you can manually configure the Gigabit Ethernet interfaces on a router like Cisco 1841 or Cisco 2811.
-Step-by-Step Instructions:
-1. Enter Global Configuration Mode
-
-    Access the router's CLI.
-
-    Enter privileged exec mode:
-
-Router# enable
-
-Then, enter global configuration mode:
-
-    Router# configure terminal
-
-2. Configure the GigabitEthernet Interfaces
-
-Let’s assume you have three GigabitEthernet interfaces on the router (Gig0/1, Gig0/2, and Gig0/3), and you want to assign them IP addresses as follows:
-
-    GigabitEthernet0/1: 192.168.1.1
-    GigabitEthernet0/2: 192.168.2.1
-    GigabitEthernet0/3: 192.168.3.1
-
-You would configure each interface as follows:
-For GigabitEthernet0/1:
-
-    Enter interface configuration mode for GigabitEthernet0/1:
-
-Router(config)# interface GigabitEthernet0/1
-
-Assign the IP address and subnet mask:
-
-Router(config-if)# ip address 192.168.1.1 255.255.255.0
-
-Enable the interface:
-
-Router(config-if)# no shutdown
-
-Exit interface configuration mode:
-
-    Router(config-if)# exit
-
-For GigabitEthernet0/2:
-
-    Enter interface configuration mode for GigabitEthernet0/2:
-
-Router(config)# interface GigabitEthernet0/2
-
-Assign the IP address and subnet mask:
-
-Router(config-if)# ip address 192.168.2.1 255.255.255.0
-
-Enable the interface:
-
-Router(config-if)# no shutdown
-
-Exit interface configuration mode:
-
-    Router(config-if)# exit
-
-For GigabitEthernet0/3:
-
-    Enter interface configuration mode for GigabitEthernet0/3:
-
-Router(config)# interface GigabitEthernet0/3
-
-Assign the IP address and subnet mask:
-
-Router(config-if)# ip address 192.168.3.1 255.255.255.0
-
-Enable the interface:
-
-Router(config-if)# no shutdown
-
-Exit interface configuration mode:
-
-Router(config-if)# exit
-
-
-
-
-
-https://akhmadzaqi.notion.site/MVC-Model-View-Controller-1ea95b7fa78d804fb272fbf161daa23a?pvs=4
-
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Counter with Speech</title>
-  <style>
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      font-family: sans-serif;
-      background-color: #f0f0f0;
-    }
-    .counter-box {
-      text-align: center;
-      background: white;
-      padding: 40px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    button {
-      margin: 10px;
-      padding: 10px 20px;
-      font-size: 18px;
-    }
-    #count {
-      font-size: 48px;
-      margin: 20px 0;
-    }
-  </style>
-</head>
-<body>
-  <div class="counter-box">
-    <div id="count">0</div>
-    <button onclick="changeCount(-1)">-</button>
-    <button onclick="changeCount(1)">+</button>
-    <br>
-    <button onclick="speakCount()">Speak</button>
-  </div>
-
-  <script>
-    let count = 0;
-    const countDisplay = document.getElementById("count");
-
-    function changeCount(amount) {
-      count += amount;
-      countDisplay.textContent = count;
-    }
-
-    function speakCount() {
-      const utterance = new SpeechSynthesisUtterance("The number is " + count);
-      speechSynthesis.speak(utterance);
-    }
-  </script>
-</body>
-</html>
-
-
-
-
-Got it! Here’s a detailed overview of the topics related to "Penjadwalan dalam Multimedia" (Scheduling in Multimedia):
-
-### 1. Penjadwalan Aliran Data Multimedia
-- **Definisi:**
-  Penjadwalan aliran data multimedia merujuk pada proses pengelolaan dan pengaturan aliran data multimedia (seperti audio dan video) untuk memastikan pengiriman yang efisien dan berkualitas.
-  
-- **Karakteristik Aliran Data:**
-  - **Kontinu:** Data multimedia sering kali bersifat kontinu, memerlukan pengiriman yang berkelanjutan.
-  - **Variabilitas Bit Rate:** Data multimedia dapat memiliki variasi dalam kecepatan bit, yang mempengaruhi cara penjadwalan.
-
-- **Tantangan:**
-  - **Sinkronisasi:** Memastikan audio dan video tetap sinkron.
-  - **Variabilitas Latensi:** Latensi yang tidak konsisten dapat mengganggu pengalaman pengguna.
-
-### 2. Manajemen Buffer
-- **Peran Buffer:**
-  Buffer digunakan untuk menyimpan data sementara sebelum diproses atau dikirim. Ini membantu mengatasi perbedaan antara kecepatan pengiriman data dan kecepatan pemrosesan.
-
-- **Teknik Manajemen Buffer:**
-  - **Buffer Dinamis:** Ukuran buffer dapat disesuaikan berdasarkan kondisi jaringan.
-  - **Buffer Statis:** Ukuran buffer tetap, yang dapat menyebabkan masalah jika tidak cukup besar untuk menangani lonjakan data.
-
-### 3. Delay Sensitive Delivery
-- **Definisi:**
-  Pengiriman yang sensitif terhadap delay adalah pengiriman data yang memerlukan latensi rendah untuk menjaga kualitas pengalaman pengguna, seperti dalam video konferensi atau permainan online.
-
-- **Teknik untuk Meminimalkan Delay:**
-  - **Prioritas Paket Data:** Memberikan prioritas lebih tinggi pada paket yang lebih sensitif terhadap delay.
-  - **Quality of Service (QoS):** Menggunakan mekanisme QoS untuk menjamin bandwidth dan mengurangi latensi.
-
-### 4. Real-Time Delivery
-- **Definisi:**
-  Pengiriman real-time merujuk pada pengiriman data yang harus terjadi dalam waktu nyata, tanpa penundaan yang signifikan.
-
-- **Algoritma Penjadwalan Real-Time:**
-  - **Rate Monotonic Scheduling (RMS):** Algoritma yang memberikan prioritas lebih tinggi pada tugas dengan periode lebih pendek.
-  - **Earliest Deadline First (EDF):** Algoritma yang memberikan prioritas pada tugas yang memiliki tenggat waktu terdekat.
-
-### 5. Task Prioritization
-- **Pentingnya Prioritization:**
-  Dalam aplikasi multimedia, beberapa tugas lebih penting daripada yang lain. Prioritization membantu memastikan bahwa tugas yang lebih kritis mendapatkan sumber daya yang diperlukan.
-
-- **Metode Prioritization:**
-  - **Prioritas Statis:** Prioritas ditentukan sebelumnya dan tidak berubah.
-  - **Prioritas Dinamis:** Prioritas dapat berubah berdasarkan kondisi saat ini, seperti beban sistem.
-
-### Kesimpulan
-Penjadwalan dalam multimedia adalah aspek penting untuk memastikan pengiriman data yang efisien dan berkualitas. Dengan memahami aliran data, manajemen buffer, pengiriman yang sensitif terhadap delay, pengiriman real-time, dan prioritas tugas, kita dapat meningkatkan pengalaman pengguna dalam aplikasi multimedia.
-
-Feel free to expand on any of these sections or ask for more specific details!
-
-
-
-
-
-https://youtube.com/shorts/indetHhzFys
-
-
-https://www.kaggle.com/datasets/gregorut/videogamesales
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <DHT.h>
+#include <DHT_U.h>
+
+#define DHTPIN 19
+#define DHTTYPE DHT11
+#define LDRPIN 39        // Pin LDR
+#define SLAVE_ADDR 8
+
+DHT dht(DHTPIN, DHTTYPE);
+char dataKirim[32]; // buffer kecil, aman untuk I2C (≤32 bytes)
+
+void requestEvent() {
+  // Kirim data JSON kecil ke master
+  Wire.write((const uint8_t*)dataKirim, strlen(dataKirim));
+}
+
+void setup() {
+  Serial.begin(9600);
+  Wire.begin(SLAVE_ADDR); // mode slave
+  Wire.onRequest(requestEvent); // callback saat master minta data
+  dht.begin();
+  Serial.println("Slave siap baca DHT & LDR, kirim ke master (JSON kecil)");
+}
+
+void loop() {
+  float suhu = dht.readTemperature();
+  float kelembapan = dht.readHumidity();
+  int ldrValue = analogRead(LDRPIN); // baca nilai LDR (0-4095)
+
+  if (!isnan(suhu) && !isnan(kelembapan)) {
+    // JSON kecil, aman ≤32 byte
+    snprintf(dataKirim, sizeof(dataKirim),
+             "{\"t\":%.1f,\"h\":%.1f,\"l\":%d}",
+             suhu, kelembapan, ldrValue);
+  } else {
+    snprintf(dataKirim, sizeof(dataKirim),
+             "{\"e\":\"Sensor Error\"}");
+  }
+
+  Serial.println(dataKirim);  // debug
+  delay(2000);
+}
