@@ -1,28 +1,81 @@
-<?php
-$host = "localhost"; // Sesuaikan dengan host MySQL Anda
-$user = "root"; // Sesuaikan dengan username MySQL Anda
-$pass = ""; // Sesuaikan dengan password MySQL Anda
-$db = "divais_iot"; // Sesuaikan dengan nama database Anda
+#include <ESP8266WiFi.h>
+#include <ESP8266HTTPClient.h>
+#include <DHT.h>
 
-$conn = new mysqli($host, $user, $pass, $db);
-if ($conn->connect_error) {
-    die("Koneksi gagal: " . $conn->connect_error);
+// -----------------------------
+// KONFIGURASI WiFi
+// -----------------------------
+const char* ssid = "suki";
+const char* password = "12345678";
+
+// -----------------------------
+// KONFIGURASI SERVER
+// -----------------------------
+const char* serverName = "http://192.168.137.1/dht11/insert.php";
+
+// -----------------------------
+// KONFIGURASI SENSOR DHT11
+// -----------------------------
+#define DHTPIN 2       // Pin data DHT11 = D4 pada NodeMCU
+#define DHTTYPE DHT11
+
+DHT dht(DHTPIN, DHTTYPE);
+
+const int device_id = 1;
+
+void setup() {
+  Serial.begin(115200);
+
+  dht.begin();
+
+  WiFi.begin(ssid, password);
+
+  Serial.print("Menghubungkan ke WiFi");
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("\nWiFi terhubung!");
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $id_alat = $_POST["id_alat"];
-    $temperature = $_POST["temperature"];
-    $humidity = $_POST["humidity"];
+void loop() {
 
-    $sql = "INSERT INTO data_alat (id_alat, temperature, humidity, timestamp)
-            VALUES ('$id_alat', '$temperature', '$humidity', NOW())";
+  float humidity = dht.readHumidity();
+  float temperature = dht.readTemperature();
 
-    if ($conn->query($sql) === TRUE) {
-        echo "Data berhasil disimpan";
+  if (isnan(humidity) || isnan(temperature)) {
+    Serial.println("Gagal membaca dari DHT11!");
+    delay(2000);
+    return;
+  }
+
+  // -----------------------------
+  // KIRIM DATA KE SERVER
+  // -----------------------------
+  if (WiFi.status() == WL_CONNECTED) {
+    WiFiClient client;
+    HTTPClient http;
+
+    String postData = "device_id=" + String(device_id) +
+                      "&sensor_type=DHT11" +
+                      "&temperature=" + String(temperature) +
+                      "&humidity=" + String(humidity);
+
+    http.begin(client, serverName);
+    http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    int httpCode = http.POST(postData);
+
+    if (httpCode > 0) {
+      String payload = http.getString();
+      Serial.println("Respon Server: " + payload);
     } else {
-        echo "Error: " . $sql . "<br>" . $conn->error;
+      Serial.print("Gagal mengirim data. Error: ");
+      Serial.println(httpCode);
     }
-}
 
-$conn->close();
-?>
+    http.end();
+  }
+
+  delay(10000); // kirim setiap 10 detik
+}
