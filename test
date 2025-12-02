@@ -1,59 +1,28 @@
-#include <WiFi.h>
-#include <HTTPClient.h>
+<?php
+$host = "localhost"; // Sesuaikan dengan host MySQL Anda
+$user = "root"; // Sesuaikan dengan username MySQL Anda
+$pass = ""; // Sesuaikan dengan password MySQL Anda
+$db = "divais_iot"; // Sesuaikan dengan nama database Anda
 
-// Konfigurasi WiFi
-const char* ssid = "wi-fi";  // Ganti dengan SSID WiFi Anda
-const char* password = "password"; // Ganti dengan password WiFi Anda
-
-// Konfigurasi server
-const char* serverName = "http://192.168.137.7/praktek/insert.php"; // Ganti dengan URL PHP
-
-// ID alat (misalnya unik untuk setiap ESP32)
-const int id_alat = 1;
-
-void setup() {
-    Serial.begin(115200);
-    WiFi.begin(ssid, password);
-
-    Serial.print("Menghubungkan ke WiFi");
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(1000);
-        Serial.print(".");
-    }
-    Serial.println("\nTerhubung ke WiFi!");
+$conn = new mysqli($host, $user, $pass, $db);
+if ($conn->connect_error) {
+    die("Koneksi gagal: " . $conn->connect_error);
 }
 
-void loop() {
-    if (WiFi.status() == WL_CONNECTED) {
-        HTTPClient http;
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $id_alat = $_POST["id_alat"];
+    $temperature = $_POST["temperature"];
+    $humidity = $_POST["humidity"];
 
-        // Generate nilai acak untuk suhu dan kelembaban
-        float temperature = random(200, 350) / 10.0; // Nilai antara 20.0 - 35.0
-        float humidity = random(400, 800) / 10.0; // Nilai antara 40.0 - 80.0
+    $sql = "INSERT INTO data_alat (id_alat, temperature, humidity, timestamp)
+            VALUES ('$id_alat', '$temperature', '$humidity', NOW())";
 
-        String postData = "id_alat=" + String(id_alat) +
-                          "&temperature=" + String(temperature) +
-                          "&humidity=" + String(humidity);
-
-        Serial.println("Mengirim data: " + postData);
-
-        http.begin(serverName);
-        http.addHeader("Content-Type", "application/x-www-form-urlencoded");
-
-        int httpResponseCode = http.POST(postData);
-
-        if (httpResponseCode > 0) {
-            String response = http.getString();
-            Serial.println("Respon Server: " + response);
-        } else {
-            Serial.print("Error mengirim data: ");
-            Serial.println(httpResponseCode);
-        }
-
-        http.end();
+    if ($conn->query($sql) === TRUE) {
+        echo "Data berhasil disimpan";
     } else {
-        Serial.println("WiFi tidak terhubung");
+        echo "Error: " . $sql . "<br>" . $conn->error;
     }
-
-    delay(10000); // Kirim data setiap 60 detik
 }
+
+$conn->close();
+?>
