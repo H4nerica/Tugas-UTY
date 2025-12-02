@@ -1,167 +1,59 @@
-const int motorLeft = D1;     // Left motor pin
-const int motorRight = D2;    // Right motor pin
+#include <WiFi.h>
+#include <HTTPClient.h>
 
-const int ECHO_PIN  = D7;     // Ultrasonic echo pin
-const int TRIG_PIN  = D8;     // Ultrasonic trigger pin
+// Konfigurasi WiFi
+const char* ssid = "wi-fi";  // Ganti dengan SSID WiFi Anda
+const char* password = "password"; // Ganti dengan password WiFi Anda
 
-const int IR_LEFT   = D5;     // Left IR sensor
-const int IR_RIGHT  = D6;     // Right IR sensor
+// Konfigurasi server
+const char* serverName = "http://192.168.137.7/praktek/insert.php"; // Ganti dengan URL PHP
 
-// Adjustable parameters for turning
-const int turnDelay = 600;       // milliseconds to run motors during a turn (increase for bigger turn)
-const int turnSpeed = 800;       // PWM speed during turning (0-1023)
-const int forwardSpeed = 800;    // PWM speed for moving forward
-
-unsigned long lastTurnTime = 0;      // To track cooldown timing
-const unsigned long turnCooldown = 700;  // ms cooldown between turns
+// ID alat (misalnya unik untuk setiap ESP32)
+const int id_alat = 1;
 
 void setup() {
-  Serial.begin(9600);
+    Serial.begin(115200);
+    WiFi.begin(ssid, password);
 
-  pinMode(TRIG_PIN, OUTPUT);
-  pinMode(ECHO_PIN, INPUT);
-
-  pinMode(motorLeft, OUTPUT);
-  pinMode(motorRight, OUTPUT);
-
-  pinMode(IR_LEFT, INPUT);
-  pinMode(IR_RIGHT, INPUT);
+    Serial.print("Menghubungkan ke WiFi");
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(1000);
+        Serial.print(".");
+    }
+    Serial.println("\nTerhubung ke WiFi!");
 }
 
 void loop() {
-  long duration;
-  float distance;
+    if (WiFi.status() == WL_CONNECTED) {
+        HTTPClient http;
 
-  // Trigger ultrasonic sensor
-  digitalWrite(TRIG_PIN, LOW);
-  delayMicroseconds(2);
-  digitalWrite(TRIG_PIN, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(TRIG_PIN, LOW);
+        // Generate nilai acak untuk suhu dan kelembaban
+        float temperature = random(200, 350) / 10.0; // Nilai antara 20.0 - 35.0
+        float humidity = random(400, 800) / 10.0; // Nilai antara 40.0 - 80.0
 
-  // Read echo time and convert to distance
-  duration = pulseIn(ECHO_PIN, HIGH);
-  distance = duration * 0.034 / 2;
+        String postData = "id_alat=" + String(id_alat) +
+                          "&temperature=" + String(temperature) +
+                          "&humidity=" + String(humidity);
 
-  // Read IR sensors with debounce
-  bool leftWall  = isWallIR(IR_LEFT);    // LOW = wall
-  bool rightWall = isWallIR(IR_RIGHT);   // LOW = wall
-  bool frontWall = distance <= 20;       // <= 15 cm = wall
+        Serial.println("Mengirim data: " + postData);
 
-  // Debug output
-  Serial.print("Front wall: ");
-  Serial.print(frontWall);
-  Serial.print(" | Left wall: ");
-  Serial.print(leftWall);
-  Serial.print(" | Right wall: ");
-  Serial.println(rightWall);
+        http.begin(serverName);
+        http.addHeader("Content-Type", "application/x-www-form-urlencoded");
 
-  unsigned long now = millis();
+        int httpResponseCode = http.POST(postData);
 
-  // Only allow a new turn if cooldown has passed
-  bool canTurn = (now - lastTurnTime) > turnCooldown;
+        if (httpResponseCode > 0) {
+            String response = http.getString();
+            Serial.println("Respon Server: " + response);
+        } else {
+            Serial.print("Error mengirim data: ");
+            Serial.println(httpResponseCode);
+        }
 
-  if (frontWall && leftWall && rightWall) {
-    if (canTurn) {
-      lastTurnTime = now;
-      // Wall on all sides → spin 180 degrees
-      stopMotors();
-      delay(150);  // Pause before full spin
-      analogWrite(motorLeft, turnSpeed);
-      analogWrite(motorRight, 0);
-      delay(turnDelay * 2); // Adjust timing for 180° turn
-      stopMotors();
-      delay(100);
-
-      // Move forward a bit after turn to update sensors
-      moveForward();
-      delay(200);
-      stopMotors();
-    }
-  } 
-  else if (frontWall) {
-    if (canTurn) {
-      lastTurnTime = now;
-      // Wall ahead → stop first, then turn
-      stopMotors();
-      delay(150);  // Stop before turning
-
-      if (leftWall) {
-        // Wall in front and left → turn right
-        goRight();
-      } else if (rightWall) {
-        // Wall in front and right → turn left
-        goLeft();
-      } else {
-        // Only front wall → pick a turn (default right)
-        goRight();
-      }
-    }
-  } 
-  else {
-    // No front wall — pause only if turning
-    if (canTurn && leftWall && !rightWall) {
-      lastTurnTime = now;
-      stopMotors();
-      delay(100);
-      goRight();
-    } else if (canTurn && !leftWall && rightWall) {
-      lastTurnTime = now;
-      stopMotors();
-      delay(100);
-      goLeft();
+        http.end();
     } else {
-      moveForward();  // Smooth forward, no stop inside moveForward()
+        Serial.println("WiFi tidak terhubung");
     }
-  }
 
-  delay(50); // Short loop delay for responsiveness
-}
-
-// Debounced IR sensor reading
-bool isWallIR(int pin) {
-  int count = 0;
-  for (int i = 0; i < 5; i++) {
-    if (digitalRead(pin) == LOW) count++;
-    delay(5);
-  }
-  return count >= 3;
-}
-
-// Movement functions
-void moveForward() {
-  analogWrite(motorLeft, forwardSpeed);
-  analogWrite(motorRight, forwardSpeed);
-  // NO delay or stop here! Let the loop control timing.
-}
-
-void goLeft() {
-  analogWrite(motorLeft, 0);
-  analogWrite(motorRight, turnSpeed);
-  delay(turnDelay);
-  stopMotors();
-  delay(100);
-  
-  // Small forward push to update sensors
-  moveForward();
-  delay(200);
-  stopMotors();
-}
-
-void goRight() {
-  analogWrite(motorLeft, turnSpeed);
-  analogWrite(motorRight, 0);
-  delay(turnDelay);
-  stopMotors();
-  delay(100);
-  
-  // Small forward push to update sensors
-  moveForward();
-  delay(200);
-  stopMotors();
-}
-
-void stopMotors() {
-  analogWrite(motorLeft, 0);
-  analogWrite(motorRight, 0);
+    delay(10000); // Kirim data setiap 60 detik
 }
