@@ -1,1 +1,8 @@
-
+Cara Pengerjaan
+1. read csv play tennis
+2. replace missing - singe parameter - humidity - average parameter. yang dipilih humidity
+3. sama kek nomor dua tapi wind skrg.
+4. set role - playtennis jadi label
+5. Split data - 0.7 0.3
+6. decicition tree terus apply model biar tau performanya
+7. tambahin perfomormance classification
